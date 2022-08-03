@@ -39,7 +39,7 @@ service.interceptors.response.use(
     // }
     // 请求成功的函数
     const { success, data, message } = res.data
-    console.log(res)
+    // console.log(res)
     if (success) {
       return data
     }
