@@ -18,6 +18,7 @@
           <img
             :src="$store.state.user.userInfo.staffPhoto"
             class="user-avatar"
+            v-imgError="defaultImg"
           />
           <span>{{ $store.state.user.userInfo.username }}</span>
           <i class="el-icon-caret-bottom" />
@@ -40,8 +41,15 @@
 import { mapGetters } from 'vuex'
 import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
+import defaultImg from '@/assets/common/head.jpg'
 
 export default {
+  // 如果想在data中定义本地图片路径,需要引入
+  data() {
+    return {
+      defaultImg
+    }
+  },
   components: {
     Breadcrumb,
     Hamburger
