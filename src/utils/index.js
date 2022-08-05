@@ -115,3 +115,26 @@ export function param2Obj(url) {
   })
   return obj
 }
+
+/**
+ * 将list数据处理为treeList
+ * @param {*} data 要处理的数据
+ * @param {*} pid 父级id
+ * @returns treeList
+ */
+export function transListToTree(data, pid) {
+  const arr = []
+  data.forEach((item) => {
+    if (item.pid === pid) {
+      // 当前: item 就是1级数据 item.id
+      const children = transListToTree(data, item.id)
+      if (children.length) {
+        item.children = children
+      }
+      arr.push(item)
+    }
+  })
+  return arr
+}
+// const tree = transListToTree(list, 0)
+// console.log(tree)

@@ -18,18 +18,16 @@
 </template>
 
 <script>
+import { getDeptsApi } from '@/api/departments'
 import TreeTools from './components/tree-tools.vue'
+import { transListToTree } from '@/utils/index'
 export default {
   components: {
     TreeTools
   },
   data() {
     return {
-      treeData: [
-        { name: '总裁办', children: [{ name: '董事会' }] },
-        { name: '行政部' },
-        { name: '人事部' }
-      ],
+      treeData: [],
       defaultProps: {
         label: 'name' //将data中哪个数据名显示到树形页面中
         // children: 'child' //树形默认查找了节点通过children
@@ -38,9 +36,16 @@ export default {
     }
   },
 
-  created() {},
+  created() {
+    this.loadDepts()
+  },
 
-  methods: {}
+  methods: {
+    async loadDepts() {
+      const res = await getDeptsApi()
+      this.treeData = transListToTree(res.depts, '')
+    }
+  }
 }
 </script>
 
