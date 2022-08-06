@@ -1,0 +1,142 @@
+<template>
+  <!-- 添加部门弹层 -->
+  <!-- 灰色弹层是el-dialog组件内部的 -->
+  <!-- 组件内部点击灰色遮罩, 在修改visible -->
+  <!-- this.$emit('update: visible', false) -->
+  <!-- :visible=“visible” 父向子传值 -->
+  <!-- @update:visible=“visible = $event” -->
+  <el-dialog @close="onClose" title="添加部门" :visible="visible" width="50%">
+    <el-form
+      :model="formData"
+      :rules="formRules"
+      ref="form"
+      label-width="100px"
+    >
+      <el-form-item label="部门名称" prop="name">
+        <el-input v-model="formData.name" placeholder="输入部门名称"></el-input>
+      </el-form-item>
+      <el-form-item label="部门编码" prop="code">
+        <el-input v-model="formData.code" placeholder="输入部门编码"></el-input>
+      </el-form-item>
+      <el-form-item label="部门负责人" prop="manager">
+        <el-select
+          v-model="formData.manager"
+          style="width: 100%"
+          placeholder="请选择部门负责人"
+        >
+          <el-option
+            v-for="item in employees"
+            :key="item.id"
+            :label="item.username"
+            :value="item.username"
+          ></el-option>
+          <el-option label="里斯" value="beijing"></el-option>
+        </el-select>
+      </el-form-item>
+      <el-form-item label="部门介绍" prop="introduce">
+        <el-input
+          v-model="formData.introduce"
+          type="textarea"
+          placeholder="请输入部门介绍"
+        ></el-input>
+      </el-form-item>
+    </el-form>
+    <span slot="footer" class="dialog-footer">
+      <el-button @click="onClose">取 消</el-button>
+      <el-button @click="onSave" type="primary">确 定</el-button>
+    </span>
+  </el-dialog>
+</template>
+
+<script>
+import { getDeptsApi, addDeptsApi } from '@/api/departments'
+import { getEmployeesApi } from '@/api/employee'
+export default {
+  props: {
+    visible: {
+      type: Boolean,
+      required: true
+    },
+    currentNode: {
+      type: Object,
+      required: true
+    }
+  },
+  data() {
+    const checkDepName = (rule, value, callback) => {
+      // 1. 判断value 是否和添加的同级部门是否重复(获取到同级部门)
+      if (!this.currentNode.children) return callback()
+      const isRepeat = this.currentNode.children.some((item) => {
+        return item.name === value
+      })
+      // 2. 如果重复 callback(new Error(‘部门重复’))
+      isRepeat ? callback(new Error('部门名称重复')) : callback()
+      // 3. 如果没重复 callback()
+    }
+    const checkDepCode = async (rule, value, callback) => {
+      const { depts } = await getDeptsApi()
+      const isRepeat = depts.some((item) => item.code === value)
+      isRepeat ? callback(new Error('部门编码重复')) : callback()
+    }
+    return {
+      formData: {
+        name: '', // 部门名称
+        code: '', // 部门编码
+        manager: '', // 部门管理者
+        introduce: '' // 部门介绍
+      },
+      formRules: {
+        name: [
+          { required: true, message: '请输入部门名称', trigger: 'blur' },
+          {
+            validator: checkDepName,
+            trigger: 'blur'
+          }
+        ],
+        code: [
+          { required: true, message: '请输入部门编码', trigger: 'blur' },
+          {
+            validator: checkDepCode,
+            trigger: 'blur'
+          }
+        ],
+        manager: [
+          { required: true, message: '请输入部门管理者', trigger: 'change' }
+        ],
+        introduce: [
+          { required: true, message: '请输入部门介绍', trigger: 'blur' }
+        ]
+      },
+      employees: []
+    }
+  },
+
+  created() {
+    this.getEmployeesList()
+  },
+
+  methods: {
+    async getEmployeesList() {
+      const res = await getEmployeesApi()
+      this.employees = res
+    },
+    onClose() {
+      this.$emit('update:visible', false)
+    },
+    async onSave() {
+      await this.$refs.form.validate()
+      this.formData.pid = this.currentNode.id
+      try {
+        await addDeptsApi(this.formData)
+        this.$message.success('新增部门成功')
+        this.onClose()
+        this.$emit('add-success')
+      } catch (err) {
+        this.$message.error('添加失败')
+      }
+    }
+  }
+}
+</script>
+
+<style scoped></style>
