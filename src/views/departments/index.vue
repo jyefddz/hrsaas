@@ -1,7 +1,7 @@
 <template>
   <div class="dashboard-container">
     <div class="app-container">
-      <el-card class="box-card">
+      <el-card v-loading="loading" class="box-card">
         <!-- 头部 -->
         <TreeTools
           @add="dialogVisible = true"
@@ -16,6 +16,7 @@
             <TreeTools
               @add="showAddDept"
               @remove="loadDepts"
+              @edit="showEdit"
               :treeNode="data"
             />
           </template>
@@ -23,7 +24,12 @@
       </el-card>
     </div>
     <!-- 添加部门弹层 -->
-    <AddDept @add-success="loadDepts" :visible.sync="dialogVisible" :currentNode="currentNode"/>
+    <AddDept
+      ref="addDept"
+      @add-success="loadDepts"
+      :visible.sync="dialogVisible"
+      :currentNode="currentNode"
+    />
   </div>
 </template>
 
@@ -39,6 +45,7 @@ export default {
   },
   data() {
     return {
+      loading: false,
       treeData: [],
       defaultProps: {
         label: 'name' //将data中哪个数据名显示到树形页面中
@@ -56,12 +63,18 @@ export default {
 
   methods: {
     async loadDepts() {
+      this.loading = true
       const res = await getDeptsApi()
       this.treeData = transListToTree(res.depts, '')
+      this.loading = false
     },
     showAddDept(val) {
       this.dialogVisible = true
       this.currentNode = val
+    },
+    showEdit(val) {
+      this.dialogVisible = true
+      this.$refs.addDept.getDepById(val.id)
     }
   }
 }

@@ -39,3 +39,27 @@ export function addDeptsApi(data) {
     data
   })
 }
+
+/**
+ * 根据id获取部门详情
+ * @param {String} id 部门id
+ * @returns Promise
+ */
+export function getDeptByIdApi(id) {
+  return request({
+    url:`/company/department/${id}`,
+  })
+}
+
+/**
+ * 根据id修改部门
+ * @param {*} data 
+ * @returns 
+ */
+export function editDeptByIdApi(data) {
+  return request({
+    url:`/company/department/${data.id}`,
+    method:'PUT',
+    data
+  })
+}
