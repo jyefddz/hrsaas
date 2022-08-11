@@ -8,13 +8,13 @@ import store from '@/store'
 // from: 来自哪里的路由信息
 // next: 是否进入
 const whiteList = ['/login', '/404']
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const token = store.state.user.token
   if (token) {
-    // if (!store.state.user.userInfo.userId) {
+    if (!store.state.user.userInfo.userId) {
       // 获取用户信息
-      store.dispatch('user/getUserInfo')
-    // }
+      await store.dispatch('user/getUserInfo')
+    }
     // 1. 登录
     // 1.1 是否进入登录页
     if (to.path === '/login') {
