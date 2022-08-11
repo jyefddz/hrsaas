@@ -157,7 +157,7 @@ export default {
         this.$store.state.user.userInfo.companyId
       )
       this.companyInfo = res
-      console.log(this.companyInfo)
+      // console.log(this.companyInfo)
     }
   }
 }
