@@ -15,11 +15,22 @@ import router from './router'
 import '@/icons' // icon
 import '@/permission' // permission control
 
+// 自定义指令
 import * as directives from '@/directives'
 
+// 组件
 import components from './components'
 
+// 过滤器
+import * as filters from '@/filters'
+
+// 统一注册组件
 Vue.use(components)
+
+// 统一注册过滤器
+for (let key in filters) {
+  Vue.filter(key, filters[key])
+}
 
 /**
  * If you don't want to use mock-server

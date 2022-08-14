@@ -26,8 +26,7 @@ function transListToTree(data, pid) {
   })
   return arr
 }
-const tree = transListToTree(list, 0)
-console.log(tree)
+transListToTree(list, 0)
 
 import { mapGetters } from 'vuex'
 
