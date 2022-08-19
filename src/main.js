@@ -24,6 +24,9 @@ import components from './components'
 // 过滤器
 import * as filters from '@/filters'
 
+// 打印
+import Print from 'vue-print-nb'
+Vue.use(Print)
 // 统一注册组件
 Vue.use(components)
 

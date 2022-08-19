@@ -27,7 +27,9 @@
           <el-tab-pane label="个人详情" name="user">
             <UserInfo></UserInfo>
           </el-tab-pane>
-          <el-tab-pane label="岗位信息" name="job" />
+          <el-tab-pane label="岗位信息" name="job">
+            <JobInfo></JobInfo>
+          </el-tab-pane>
         </el-tabs>
       </el-card>
     </div>
@@ -38,10 +40,12 @@
 import { getUserDetail } from '@/api/user'
 import { saveUserDetailById } from '@/api/employee'
 import UserInfo from '@/views/employees/components/user-info.vue'
+import JobInfo from '@/views/employees/components/job-info.vue'
 import Cookies from 'js-cookie'
 export default {
   components: {
-    UserInfo
+    UserInfo,
+    JobInfo
   },
   data() {
     return {
