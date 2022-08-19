@@ -72,7 +72,7 @@ export function saveUserDetailById(data) {
 /** *
  *  读取用户详情的基础信息
  * **/
- export function getPersonalDetail(id) {
+export function getPersonalDetail(id) {
   return request({
     url: `/employees/${id}/personalInfo`
   })
@@ -81,10 +81,21 @@ export function saveUserDetailById(data) {
 /** *
  *  更新用户详情的基础信息
  * **/
- export function updatePersonal(data) {
+export function updatePersonal(data) {
   return request({
     url: `/employees/${data.userId}/personalInfo`,
     method: 'put',
+    data
+  })
+}
+
+/** *
+ * 给用户分配角色
+ * ***/
+export function assignRoles(data) {
+  return request({
+    url: '/sys/user/assignRoles',
     data,
+    method: 'put'
   })
 }
