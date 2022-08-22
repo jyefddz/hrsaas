@@ -1,3 +1,4 @@
+import store from '@/store'
 // 定义自定义指令
 export const imgError = {
   // 当被绑定的元素插入到DOM中时
@@ -35,3 +36,16 @@ export const imgError = {
 // export const aa = {
 //   inserted() {}
 // }
+
+export const isHas = {
+  //bind: 指令和dom绑定
+  // inserted: 指令所绑定的元素插入到父节点
+  // update: 指令所绑定的Vnode
+  inserted(el, binding) {
+    const has = store.state.permission.points.includes(binding.value)
+    console.log(has);
+    if(!has){
+      el.remove();
+    }
+  }
+}

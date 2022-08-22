@@ -1,4 +1,4 @@
-import router from '@/router'
+import router, { asyncRoutes } from '@/router'
 import store from '@/store'
 // 路由(全局)前置守卫
 // 会在所有路由进入之前触发
@@ -12,8 +12,13 @@ router.beforeEach(async (to, from, next) => {
   const token = store.state.user.token
   if (token) {
     if (!store.state.user.userInfo.userId) {
-      // 获取用户信息
-      await store.dispatch('user/getUserInfo')
+      // 获取用户信息 store.dispatch的返回值是promise
+      const { roles } = await store.dispatch('user/getUserInfo')
+      // console.log(roles.menus)
+      // console.log(asyncRoutes)
+      await store.dispatch('permission/setPointsAction', roles.points)
+      await store.dispatch('permission/filterRoutes', roles)
+      next(to.path)
     }
     // 1. 登录
     // 1.1 是否进入登录页

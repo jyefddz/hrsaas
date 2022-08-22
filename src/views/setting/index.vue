@@ -3,7 +3,10 @@
     <div class="app-container">
       <el-tabs v-model="activeName">
         <el-tab-pane label="角色管理" name="first">
-          <el-button type="primary" @click="addDialogVisible = true"
+          <el-button
+            v-if="isHas('point.roles.add')"
+            type="primary"
+            @click="addDialogVisible = true"
             >新增角色</el-button
           >
           <!-- 表格 -->
@@ -12,11 +15,11 @@
             <el-table-column prop="name" label="角色"> </el-table-column>
             <el-table-column prop="description" label="描述"> </el-table-column>
             <el-table-column label="操作">
-              <template>
+              <template slot-scope="{ row }">
                 <el-button
                   size="small"
                   type="success"
-                  @click="onShowRightDialog"
+                  @click="onShowRightDialog(row.id)"
                   >分配权限</el-button
                 >
                 <el-button size="small" type="primary">编辑</el-button>
@@ -95,6 +98,8 @@
       title="给角色分配权限"
       :visible.sync="showRightDialog"
       width="50%"
+      destroy-on-close
+      @close="setRightClose"
     >
       <el-tree
         default-expand-all
@@ -103,21 +108,24 @@
         :default-checked-keys="defaultCheckoutKeys"
         :data="permissions"
         :props="{ label: 'name' }"
+        ref="perTree"
       ></el-tree>
       <span slot="footer" class="dialog-footer">
         <el-button @click="showRightDialog = false">取 消</el-button>
-        <el-button type="primary">确 定</el-button>
+        <el-button type="primary" @click="onSaveRights">确 定</el-button>
       </span>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { getRolesApi, addRolesApi } from '@/api/role'
+import { getRolesApi, addRolesApi, getRolesInfo, assignPerm } from '@/api/role'
 import { getCompanyInfoApi } from '@/api/setting'
 import { getPermissionList } from '@/api/permission'
 import { transListToTree } from '@/utils'
+import MixinPermission from '@/mixins/permission'
 export default {
+  mixins: [MixinPermission],
   data() {
     return {
       activeName: 'first',
@@ -139,7 +147,8 @@ export default {
       companyInfo: {},
       showRightDialog: false,
       permissions: [],
-      defaultCheckoutKeys: ['1', '1063315016368918528']
+      defaultCheckoutKeys: [],
+      roleId: ''
     }
   },
 
@@ -189,14 +198,31 @@ export default {
       this.companyInfo = res
       // console.log(this.companyInfo)
     },
-    onShowRightDialog() {
+    // 点击分配权限显示对话框
+    async onShowRightDialog(id) {
+      this.roleId = id
       this.showRightDialog = true
+      const res = await getRolesInfo(id)
+      this.defaultCheckoutKeys = res.permIds
     },
     // 获取权限列表
     async getPermissionList() {
       const res = await getPermissionList()
       const treePermission = transListToTree(res, '0')
       this.permissions = treePermission
+    },
+    // 监听设置权限对话框关闭
+    setRightClose() {
+      this.defaultCheckoutKeys = []
+    },
+    // 保存权限分配
+    async onSaveRights() {
+      await assignPerm({
+        id: this.roleId,
+        permIds: this.$refs.perTree.getCheckedKeys()
+      })
+      this.$message.success('分配成功')
+      this.showRightDialog = false
     }
   }
 }

@@ -8,12 +8,17 @@
             size="small"
             type="warning"
             @click="$router.push('/import')"
+            v-isHas="point.employees.import"
             >导入</el-button
           >
           <el-button size="small" type="danger" @click="exportExcel"
             >导出</el-button
           >
-          <el-button size="small" type="primary" @click="showAdd"
+          <el-button
+            v-if="isHas('point.employees.add')"
+            size="small"
+            type="primary"
+            @click="showAdd"
             >新增员工</el-button
           >
         </template>
@@ -78,7 +83,11 @@
                 @click="onShowAssignRole(row.id)"
                 >角色</el-button
               >
-              <el-button type="text" size="small" @click="onRemove(row.id)"
+              <el-button
+                v-if="isHas('point.employees.del')"
+                type="text"
+                size="small"
+                @click="onRemove(row.id)"
                 >删除</el-button
               >
             </template>
@@ -128,7 +137,9 @@ const { exportExcelMapPath, hireType } = employees
 import AddEmployees from './components/add-employees.vue'
 import AssignRole from './components/assign-role.vue'
 import QRcode from 'qrcode'
+import MixinPermission from '@/mixins/permission'
 export default {
+  mixins: [MixinPermission],
   name: 'Employees',
   components: {
     AddEmployees,
@@ -214,6 +225,7 @@ export default {
         merges: ['A1:A2', 'B1:F1', 'G1:G2']
       })
     },
+    // 显示二维码
     showErcodeDialog(staffPhoto) {
       if (!staffPhoto) return this.$message.error('该用户未设置头像')
       this.ercodeDialog = true
@@ -222,6 +234,7 @@ export default {
         QRcode.toCanvas(canvas, staffPhoto)
       })
     },
+    // 显示角色分配
     onShowAssignRole(id) {
       this.showAssignRole = true
       this.currentEmployeeId = id
