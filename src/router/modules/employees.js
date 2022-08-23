@@ -9,17 +9,20 @@ export default {
     {
       path: '',
       component: () => import('@/views/employees'),
-      meta: { title: '员工', icon: 'people' }
+      meta: { title: '员工', icon: 'people' },
+      name: 'employees',
     },
     {
       path: 'detail/:id',
       component: () => import('@/views/employees/detail'),
-      hidden: true
+      hidden: true,
+      name: 'employees',
     },
     {
       path: 'print/:id', // 二级默认路由
       component: () => import('@/views/employees/print'), // 按需加载
       hidden: true,
+      name: 'employees',
     }
   ]
 }
